@@ -1,0 +1,228 @@
+@if (isStaff()){
+    <button class="btn btn-primary fixed z-30 top-2 right-2" (click)="openAnnouncementForm()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+        </svg>          
+    </button>
+    <dialog [ngClass]="announcementForm ? 'modal-open' : ''" id="my_modal_3" class="modal">
+        <div class="modal-box p-4 max-w-2xl w-11/12 bg-neutral flex flex-col">
+            <form method="dialog">
+                <button (click)="closeAnnouncementForm()" (click)="resetForm(announcementNgForm)" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            </form>
+            <h3 class="text-lg self-center mb-4 font-bold">Criar comunicado</h3>
+            <form #announcementNgForm="ngForm" (ngSubmit)="onSubmit(announcementNgForm)" class="flex flex-col gap-2">
+                <div class="flex flex-col gap-2 items-end">
+                    <div class="w-full flex flex-col gap-2">
+                        <input name="title" required [(ngModel)]="title" type="text" placeholder="título" class="input w-full bg-base-100" />
+                        <textarea name="comment" required [(ngModel)]="content" type="text" placeholder="conteúdo" class="textarea w-full bg-base-100"></textarea>
+                    </div>  
+                </div>
+                <div class="form-control flex-col justify-between">
+                    <div class="flex flex-col-reverse min-[300px]:flex-row md:flex-col justify-between">
+                        <div class="hidden w-full justify-between items-center md:flex gap-4">
+                            <div class="form-control">
+                                <label class="label cursor-pointer">
+                                    <span class="label-text">Informação</span> 
+                                    <input [(ngModel)]="severity" required value="IN" type="radio" name="radio-1" class="radio radio-info ml-1" />
+                                </label>
+                            </div>
+                            <div class="form-control">
+                                <label class="label cursor-pointer">
+                                    <span class="label-text">Importante</span> 
+                                    <input [(ngModel)]="severity" required value="IM" type="radio" name="radio-1" class="radio radio-success ml-1" />
+                                </label>
+                            </div>
+                            <div class="form-control">
+                                <label class="label cursor-pointer">
+                                    <span class="label-text">Urgente</span> 
+                                    <input [(ngModel)]="severity" required value="WA" type="radio" name="radio-1" class="radio radio-warning ml-1" />
+                                </label>
+                            </div>
+                            <div class="form-control">
+                                <label class="label cursor-pointer">
+                                    <span class="label-text">Crítico</span> 
+                                    <input [(ngModel)]="severity" required value="CR" type="radio" name="radio-1" class="radio radio-error ml-1" />
+                                </label>
+                            </div>
+                        </div>
+                        <div class="relative self-end min-[300px]:self-start">
+                            <div (click)="handleDropdownClick($event)" [ngClass]="elementInteractionService.isDropdownOpen('announcementForm', 0) ? 'flex' : 'hidden'" dropdownClickOut class="flex md:hidden absolute z-40 border border-secondary/30 bottom-10 p-2 rounded-box bg-neutral flex-col gap-1">
+                                <div class="form-control">
+                                    <label class="label cursor-pointer">
+                                        <span class="label-text">Informação</span> 
+                                        <input [(ngModel)]="severity" required value="IN" type="radio" name="radio-2" class="radio radio-info ml-1" />
+                                    </label>
+                                </div>
+                                <div class="form-control">
+                                    <label class="label cursor-pointer">
+                                        <span class="label-text">Importante</span> 
+                                        <input [(ngModel)]="severity" required value="IM" type="radio" name="radio-2" class="radio radio-success ml-1" />
+                                    </label>
+                                </div>
+                                <div class="form-control">
+                                    <label class="label cursor-pointer">
+                                        <span class="label-text">Urgente</span> 
+                                        <input [(ngModel)]="severity" required value="WA" type="radio" name="radio-2" class="radio radio-warning ml-1" />
+                                    </label>
+                                </div>
+                                <div class="form-control">
+                                    <label class="label cursor-pointer">
+                                        <span class="label-text">Crítico</span> 
+                                        <input [(ngModel)]="severity" required value="CR" type="radio" name="radio-2" class="radio radio-error ml-1" />
+                                    </label>
+                                </div>
+                            </div>
+                            <button type="button" (click)="elementInteractionService.toggleDropdown('announcementForm', 0)"  class="btn btn-sm btn-primary md:hidden dropdown-button">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 pointer-events-none">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 13.5V3.75m0 9.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 3.75V16.5m12-3V3.75m0 9.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 3.75V16.5m-6-9V3.75m0 3.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 9.75V10.5" />
+                                </svg>                          
+                            </button>
+
+                        </div>
+                        <div class="grid grid-cols-1 min-[500px]:grid-cols-2 md:grid-cols-3 justify-items-end md:justify-items-start">
+                            <label class="label gap-2 pr-0 cursor-pointer">
+                                <span class="label-text">Enviar para o whatsapp</span> 
+                                <input [(ngModel)]="notified" type="checkbox" name="checkbox" class="checkbox checkbox-primary" />
+                            </label>
+                            <label class="label gap-2 pr-0 self-center cursor-pointer">
+                                <span class="label-text">Enviar como e-mail</span> 
+                                <input [(ngModel)]="sendMail" type="checkbox" name="checkbox2" class="checkbox checkbox-primary" />
+                            </label>
+                        </div>
+                    </div> 
+                </div>
+                @if(announcementSubmit$ | async){
+                    <span class="loading loading-spinner min-h-10 self-center bg-primary loading-lg"></span>
+                } @else {
+                    <button type="submit" [disabled]="announcementNgForm.invalid" type="submit" class="btn btn-primary self-center">
+                        <p>Enviar</p>
+                    </button> 
+                }
+            </form>
+        </div>
+        <form (click)="closeAnnouncementForm()" (click)="resetForm(announcementNgForm)" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
+
+    
+}
+  
+
+
+<div class="h-full flex flex-col items-center w-full gap-8 py-8 text-secondary/85">
+    <div class="flex w-full flex-col sm:flex-row gap-2 px-2">
+        <div class="flex w-full gap-2 items-center mr-1">
+            <label class="input min-w-10 flex shadow-sm w-full bg-neutral items-center pr-1" for="">
+                <input [(ngModel)]="searchFilter" class="placeholder:text-secondary/50 grow min-w-10" placeholder="pesquisa"/>
+                <button (click)="clearSearch()" class="btn btn-xs btn-circle btn-ghost">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                        <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                    </svg>                      
+                </button>
+            </label>
+            <button (click)="applyFilters()" class="btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                </svg>                      
+            </button>
+        </div>
+        <div class="flex flex-col sm:flex-row w-full gap-2">
+            <select  [(ngModel)]="notifiedFilter" class="select bg-neutral w-full grow" (change)="applyFilters()">
+              <option selected value="all">Todos</option>
+              <option value="true">Enviados para o whatsapp</option>
+              <option value="false">Não enviados para o whatsapp</option>
+            </select>
+            <select [(ngModel)]="severityFilter" class="select bg-neutral w-full grow" (change)="applyFilters()">
+              <option value="all" selected>Todas as severidades</option>
+              <option value="IN">Informação</option>
+              <option value="IM">Importante</option>
+              <option value="WA">Urgente</option>
+              <option value="CR">Crítico</option>
+            </select>
+            <select [(ngModel)]="dateSort" class="select bg-neutral w-full grow" (change)="applyFilters()">
+              <option value="newest" selected>Mais recentes</option>
+              <option value="oldest">Mais antigos</option>
+            </select>
+        </div>
+    </div>
+    @if (announcements$ | async; as announcements ) {
+           
+                @if (announcements.results.length > 0){
+                    @for (announcement of announcements.results; let i= $index; track i) {
+                        <div class="card indicator w-11/12 bg-neutral shadow-lg">
+                            <div class="card-body relative p-4">
+                                <div class="flex flex-col">
+                                    <p class="text-xl self-center font-bold mb-4">{{announcement.title}}</p>
+                                    <p class="mt-1 rounded-box break bg-base-100/40 p-4 min-h-12 flex flex-col justify-center">{{announcement.content}}</p>
+                                    <div class="flex justify-between px-1">
+                                        <p class="m-2 text-secondary/60">{{announcement.author.first_name}}</p>
+                                        <div class="relative self-end">
+                                            <div class="cursor-pointer hover:text-primary m-2 dropdown-button text-secondary/60" (click)="elementInteractionService.toggleDropdown('announcement', i)">{{announcement.since}}</div>
+                                            <ul class="z-10 absolute right-0 menu p-2 shadow bg-base-100/85 rounded-box w-max max-w-72" (click)="handleDropdownClick($event)" [ngClass]="elementInteractionService.isDropdownOpen('announcement', i) ? 'flex' : 'hidden'" #dropdown dropdownClickOut>
+                                                <li><a>Criação: {{announcement.created_at_formatted}}</a></li>
+                                                <li><a>Edição: {{announcement.updated_at_formatted}}</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="absolute -right-3 -top-3 z-10">
+                                    <button (click)="handleDropdownClick($event)" (click)="elementInteractionService.toggleDropdown('announcement_options', i)" class="btn z-10 bg-neutral btn-sm btn-circle dropdown-button">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                          <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75a4.5 4.5 0 0 1-4.884 4.484c-1.076-.091-2.264.071-2.95.904l-7.152 8.684a2.548 2.548 0 1 1-3.586-3.586l8.684-7.152c.833-.686.995-1.874.904-2.95a4.5 4.5 0 0 1 6.336-4.486l-3.276 3.276a3.004 3.004 0 0 0 2.25 2.25l3.276-3.276c.256.565.398 1.192.398 1.852Z" />
+                                          <path stroke-linecap="round" stroke-linejoin="round" d="M4.867 19.125h.008v.008h-.008v-.008Z" />
+                                        </svg> 
+                                        <div [ngClass]="elementInteractionService.isDropdownOpen('announcement_options', i) ? 'flex' : 'hidden'" class="absolute z-50 border-secondary/20 border -top-2 right-9 bg-base-100 rounded-lg p-1 flex">
+                                          <button (click)="openAnnouncementForm()" (click)="edit(announcement.id, announcement.title, announcement.content, announcement.severity, announcement.notified, announcement.send_mail)" class="btn btn-sm btn-circle">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                              <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                                            </svg>                              
+                                          </button>
+                                          <button (click)="deleteAnnouncement(announcement.id)" class="btn btn-sm text-error btn-circle">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                              <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                            </svg>                              
+                                          </button>
+                                        </div>                                        
+                                    </button>
+                                </div>
+                                <div class="indicator-item indicator-end indicator-bottom flex items-center translate-x-1.5 gap-1">
+                                    @if (announcement.notified){
+                                        <span class="badge border border-secondary bg-neutral">whatsapp</span>
+                                    }
+                                    @if (announcement.send_mail){
+                                        <span class="badge border border-secondary bg-neutral">e-mail</span>
+                                    }
+                                    <span [ngClass]="{
+                                        'badge-success': announcement.severity === 'importante',
+                                        'badge-info': announcement.severity === 'info',
+                                        'badge-warning': announcement.severity === 'urgente',
+                                        'badge-error': announcement.severity === 'crítico',
+                                    }" class="badge text-base-100 font-bold">{{announcement.severity}}</span>
+                                </div>
+                                            
+                            </div>
+                        </div>
+    
+                    }
+                    <div class="join" >
+                        @if(pages){
+                            @for(page of pages; let i = $index; let lastI = $last; track i){
+    
+                                    <button (click)="updatePages(page)" [ngClass]="{'btn-active btn-primary': currentPage === page}" class="join-item btn btn-active">{{page}}</button>
+
+            
+                            }
+                        }
+                    </div>
+                } @else {
+                    <p class="mt-2 self-center rounded-box border border-secondary/20 p-2 bg-neutral">Não há nenhum comunicado</p>
+                }
+            
+    } @else {
+                <div class="skeleton w-11/12 h-44"></div>
+                <div class="skeleton w-11/12 h-44"></div>
+                <div class="skeleton w-11/12 h-44"></div>           
+            }
+    
+</div>

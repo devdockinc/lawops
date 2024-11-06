@@ -1,0 +1,309 @@
+@if(isAdmin()){
+  <div class="h-full w-full flex flex-col items-center p-4 sm:p-8">
+      <div class="card bg-neutral w-full">
+          <div class="card-body p-2 gap-0">
+              <h1 class="card-title self-center my-4">Usuários e permissões</h1>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
+                  <div class="flex flex-row w-full gap-2 justify-center">
+                      <label class="input shadow-sm w-full min-w-10 bg-base-100 flex items-center pr-1">
+                        <input [(ngModel)]="searchFilter" class="placeholder:text-secondary/50 grow min-w-10" placeholder="pesquisa"/>
+                        <button (click)="clearSearch()" class="btn btn-xs btn-circle btn-ghost">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                              <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                          </svg>                      
+                        </button>
+                      </label>
+                      <button (click)="applyFilters()" class="btn btn-primary btn-square">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                        </svg>                      
+                      </button>
+                  </div>
+                  <div class="grid grid-cols-1 min-[380px]:grid-cols-2 gap-2">
+                      <select [(ngModel)]="isStaffFilter" class="select" (change)="applyFilters()">
+                          <option value="all" selected>Todos os usuários</option>
+                          <option value="true">Organizadores</option>
+                          <option value="false">Não organizadores</option>
+                      </select>
+                      <select [(ngModel)]="isSuperuserFilter" class="select" (change)="applyFilters()">
+                          <option value="all" selected>Todos os usuários</option>
+                          <option value="true">Administradores</option>
+                          <option value="false">Não Administradores</option>
+                      </select>
+                  </div>
+              </div>
+              @if(users$ | async; as users){
+                @if (users.results.length > 0) {
+                  <div class="overflow-x-auto pb-1">
+                      <table class="table bg-base-100 p-2">
+                        <!-- head -->
+                        <thead>
+                          <tr>
+                            <th>Nome de usuário</th>
+                            <th>Nome</th>
+                            <th>Sobrenome</th>
+                            <th>E-mail</th>
+                            <th>Organizador</th>
+                            <th>Administrador</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for(user of users.results; track user.id){
+                              <tr>
+                                <td>{{user.username}}</td>
+                                @if(user.first_name){
+                                  <td>{{user.first_name}}</td>
+                                } @else {
+                                  <td>Não</td>
+                                }
+  
+                                @if(user.last_name){
+                                  <td>{{user.last_name}}</td>
+                                } @else {
+                                  <td>Não</td>
+                                }
+  
+                                @if(user.email){
+                                  <td>{{user.email}}</td>
+                                } @else {
+                                  <td>Não</td>
+                                }
+  
+  
+                                @if(user.is_staff){
+                                  <td>Sim</td>
+                                } @else {
+                                  <td>Não</td>
+                                }
+  
+  
+                                @if(user.is_superuser){
+                                  <td>Sim</td>
+                                } @else {
+                                  <td>Não</td>
+                                }
+                                
+                                <td>
+                                  <button (click)="editUser($index, user.id, user.is_staff, user.is_superuser)" class="btn btn-sm btn-ghost btn-circle">
+                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                                      </svg>                              
+                                  </button>
+                                </td>
+                                <td>
+                                  <button (click)="deleteUser(user.id)" class="btn btn-ghost btn-circle btn-sm text-error">
+                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                      </svg> 
+                                  </button>  
+                                </td>
+                              </tr>
+                              @if(patchUserForm$ | async; as patchUserForm){
+                                <dialog [ngClass]="patchUserForm[$index] ? 'modal-open' : ''" class="modal">
+                                  <div class="modal-box flex flex-col px-2 pt-8 overflow-y-visible max-w-3xl bg-neutral">
+                                    <form method="dialog">
+                                        <button (click)="closePatchUserForm($index, patchUserNgForm)"  class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                                    </form>
+                                    <h3 class="text-lg font-bold mb-2 self-center">Editar usuário</h3>
+                                    <form #patchUserNgForm="ngForm" (ngSubmit)="patchUser($index, patchUserNgForm)" class="gap-4 overflow-y-auto max-h-[calc(90vh-5em)] px-2 flex flex-col">
+                                      <div class="flex flex-wrap gap-8 mt-4 justify-between">
+                                        <div class="hover:text-primary cursor-default">
+                                            <div class="flex flex-row items-center gap-2 hover:text-primary cursor-default">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.864 4.243A7.5 7.5 0 0 1 19.5 10.5c0 2.92-.556 5.709-1.568 8.268M5.742 6.364A7.465 7.465 0 0 0 4.5 10.5a7.464 7.464 0 0 1-1.15 3.993m1.989 3.559A11.209 11.209 0 0 0 8.25 10.5a3.75 3.75 0 1 1 7.5 0c0 .527-.021 1.049-.064 1.565M12 10.5a14.94 14.94 0 0 1-3.6 9.75m6.633-4.596a18.666 18.666 0 0 1-2.485 5.33" />
+                                                </svg>                                                                            
+                                                <p class="font-bold">Nome de usuário</p>                      
+                                            </div>
+                                            
+                                            <p class="text-secondary/85">{{user.username}}</p>                    
+                                        </div>
+                                        <div class="hover:text-primary cursor-default">
+                                            <div class="flex flex-row items-center gap-2 hover:text-primary cursor-default">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 3.75H6.912a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H15M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859M12 3v8.25m0 0-3-3m3 3 3-3" />
+                                                </svg>                                                                             
+                                                <p class="font-bold">E-mail</p>                      
+                                            </div>
+                                            @if(user.email){
+                                                <p class="text-secondary/85">{{user.email}}</p>                    
+                                            } @else {
+                                                <p class="text-secondary/85">Não definido</p>
+                                            }
+                                        </div>
+                                        <div class="hover:text-primary cursor-default">
+                                            <div class="flex flex-row items-center gap-2 hover:text-primary cursor-default">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z" />
+                                                </svg>                                                                            
+                                                <p class="font-bold">Nome</p>                      
+                                            </div>
+                                            @if(user.first_name){
+                                                <p class="text-secondary/85">{{user.first_name}}</p>                    
+                                            } @else {
+                                                <p class="text-secondary/85">Não definido</p>
+                                            }                
+                                        </div>
+                                        <div class="hover:text-primary cursor-default">
+                                            <div class="flex flex-row items-center gap-2 hover:text-primary cursor-default">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z" />
+                                                </svg>                                                                            
+                                                <p class="font-bold">Sobrenome</p>                      
+                                            </div>
+                                            @if(user.last_name){
+                                                <p class="text-secondary/85">{{user.last_name}}</p>                    
+                                            } @else {
+                                                <p class="text-secondary/85">Não definido</p>
+                                            }    
+                        
+                                        </div>
+                                      </div>
+                                      <div class="form-control">
+                                        <label class="label cursor-pointer max-w-36">
+                                          <span class="label-text mr-2 text-secondary">Organizador</span> 
+                                          <input type="checkbox" name="staff" class="checkbox checkbox-primary" [(ngModel)]="isStaff" />
+                                        </label>
+                                        <div class="label">
+                                          <span class="label-text-alt">O usuário pode ver, criar e editar anúncios, processos e comunicados.</span>
+                                        </div>          
+                                      </div>
+                                      <div class="form-control">
+                                        <label class="label cursor-pointer max-w-36">
+                                          <span class="label-text mr-2 text-secondary">Administrador</span> 
+                                          <input type="checkbox" name="admin" class="checkbox checkbox-primary" [(ngModel)]="isSuperuser" />
+                                        </label>
+                                        <div class="label">
+                                          <span class="label-text-alt">O usuário pode ver, criar, editar e deletar anúncios, processos, finanças, comunicados e contas.</span>
+                                        </div>
+                                      </div>
+                                
+                                        @if(userFormSubmit$ | async){
+                                          <span class="loading loading-spinner min-h-10 self-center bg-primary loading-lg"></span>
+                                        } @else {
+                                          <button type="submit" [disabled]="patchUserNgForm.invalid" type="submit" class="btn btn-primary self-center">
+                                              <p>Enviar</p>
+                                          </button> 
+                                        }
+                                    </form>
+                                
+                                
+                                  </div>
+                                  <form (click)="closePatchUserForm($index, patchUserNgForm)" method="dialog" class="modal-backdrop">
+                                    <button>close</button>
+                                  </form>
+                                </dialog>
+  
+                              }
+                              
+                            }
+                          </tbody>
+                        </table>
+                  </div>
+
+                  <div class="join self-center my-4" >
+                    @if(pages){
+                        @for(page of pages; let i = $index; let lastI = $last; track i){
+                          <button (click)="updatePages(page)" [ngClass]="{'btn-active btn-primary': currentPage === page}" class="join-item btn btn-active">{{page}}</button>
+                        }
+                    }
+                  </div>
+                } @else{
+                  <p class="self-center my-8">Não há usuários</p>
+                }
+  
+              } @else {
+                <div class="skeleton h-32 w-full mt-8"></div>
+              }
+          </div>
+      </div>
+  </div>
+  
+  
+  <button (click)="openPostUserForm()" class="btn btn-primary fixed z-30 top-2 right-2">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+      </svg>   
+  </button>
+  
+  <!-- Open the modal using ID.showModal() method -->
+  <dialog [ngClass]="(postUserForm$ | async) ? 'modal-open' : ''" class="modal">
+    <div class="modal-box bg-neutral">
+      <form method="dialog">
+          <button (click)="closePostUserForm(postUserNgForm)" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+      <form #postUserNgForm="ngForm" (ngSubmit)="postUser(postUserNgForm)" class="gap-4 flex flex-col">
+          <h3 class="text-lg font-bold self-center">Criar usuário</h3>
+          <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text">Nome de usuário *</span>
+              </div>
+              <input [ngClass]="userNameInput.invalid && userNameInput.touched ? 'border-error input-error' : ''" #userNameInput="ngModel" [(ngModel)]="userName" name="userName" type="text" required placeholder="Ex: joao_silva" class="input w-full" />
+              @if(userNameInput.invalid && userNameInput.touched){
+                  <p class="text-error mt-1">O nome de usuário é obrigatório!</p>
+              }
+          </label>
+          <label [ngClass]="passwordInput.invalid && passwordInput.touched ? 'border-error input-error' : ''" class="form-control max-w-lg w-full">
+              <div class="label">
+                  <span class="label-text">Senha *</span>
+              </div>
+              <div [ngClass]="passwordInput.invalid && passwordInput.touched ?  'border-error input-error' : ''" class="input items-center flex justify-between">
+                  <input #passwordInput="ngModel" [(ngModel)]="userPassword"  autocomplete="current-password" type="{{ showPassword ? 'text': 'password' }}" name="userPassword" #password="ngModel" [(ngModel)]="userPassword" required minlength="4" class="w-full" placeholder="senha" />
+                  <button (click)="showPassword = !showPassword" type="button" class="btn btn-ghost btn-sm btn-circle">
+                      <svg [ngClass]="showPassword ? 'hidden' : 'flex'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                          <path d="M3.53 2.47a.75.75 0 0 0-1.06 1.06l18 18a.75.75 0 1 0 1.06-1.06l-18-18ZM22.676 12.553a11.249 11.249 0 0 1-2.631 4.31l-3.099-3.099a5.25 5.25 0 0 0-6.71-6.71L7.759 4.577a11.217 11.217 0 0 1 4.242-.827c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113Z" />
+                          <path d="M15.75 12c0 .18-.013.357-.037.53l-4.244-4.243A3.75 3.75 0 0 1 15.75 12ZM12.53 15.713l-4.243-4.244a3.75 3.75 0 0 0 4.244 4.243Z" />
+                          <path d="M6.75 12c0-.619.107-1.213.304-1.764l-3.1-3.1a11.25 11.25 0 0 0-2.63 4.31c-.12.362-.12.752 0 1.114 1.489 4.467 5.704 7.69 10.675 7.69 1.5 0 2.933-.294 4.242-.827l-2.477-2.477A5.25 5.25 0 0 1 6.75 12Z" />
+                      </svg>
+                      <svg [ngClass]="showPassword ? 'flex' : 'hidden'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                          <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                          <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z" clip-rule="evenodd" />
+                      </svg>                                                                            
+                  </button>
+              </div>    
+              @if(passwordInput.invalid && passwordInput.touched){
+                  <p class="text-error mt-1">A senha é obrigatória!</p>
+              }
+          </label>
+          <label class="form-control max-w-lg w-full">
+              <div class="label">
+                  <span class="label-text">Confirmar senha *</span>
+              </div>
+              <div [ngClass]="passwordConfirmationInput.invalid && passwordConfirmationInput.touched ? 'border-error input-error' : ''" class="input items-center flex justify-between">
+                  <input #passwordConfirmationInput="ngModel" [(ngModel)]="userPasswordConfirmation"  autocomplete="current-password" type="{{ showPasswordConfirmation ? 'text': 'password' }}" name="userPasswordConfirmation" #password="ngModel" [(ngModel)]="userPasswordConfirmation" required minlength="4" class="w-full" placeholder="senha" />
+                  <button (click)="showPasswordConfirmation = !showPasswordConfirmation" type="button" class="btn btn-ghost btn-sm btn-circle">
+                      <svg [ngClass]="showPasswordConfirmation ? 'hidden' : 'flex'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                          <path d="M3.53 2.47a.75.75 0 0 0-1.06 1.06l18 18a.75.75 0 1 0 1.06-1.06l-18-18ZM22.676 12.553a11.249 11.249 0 0 1-2.631 4.31l-3.099-3.099a5.25 5.25 0 0 0-6.71-6.71L7.759 4.577a11.217 11.217 0 0 1 4.242-.827c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113Z" />
+                          <path d="M15.75 12c0 .18-.013.357-.037.53l-4.244-4.243A3.75 3.75 0 0 1 15.75 12ZM12.53 15.713l-4.243-4.244a3.75 3.75 0 0 0 4.244 4.243Z" />
+                          <path d="M6.75 12c0-.619.107-1.213.304-1.764l-3.1-3.1a11.25 11.25 0 0 0-2.63 4.31c-.12.362-.12.752 0 1.114 1.489 4.467 5.704 7.69 10.675 7.69 1.5 0 2.933-.294 4.242-.827l-2.477-2.477A5.25 5.25 0 0 1 6.75 12Z" />
+                      </svg>
+                      <svg [ngClass]="showPasswordConfirmation ? 'flex' : 'hidden'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                          <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                          <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z" clip-rule="evenodd" />
+                      </svg>                                                                            
+                  </button>
+              </div>    
+              @if(passwordConfirmationInput.invalid && passwordConfirmationInput.touched){
+                  <p class="text-error mt-1">É necessário confirmar a senha!</p>
+              }
+              @if(passwordInput.value !== passwordConfirmationInput.value){
+              <p class="text-error mt-1">As senhas precisam ser equivalentes!</p>
+              }
+          </label>
+  
+      
+          @if(userFormSubmit$ | async){
+              <span class="loading loading-spinner min-h-10 self-center bg-primary loading-lg"></span>
+          } @else {
+              <button type="submit" [disabled]="postUserNgForm.invalid || passwordInput.value !== passwordConfirmationInput.value" type="submit" class="btn btn-primary self-center">
+                  <p>Enviar</p>
+              </button> 
+          }
+      </form>
+  
+  
+    </div>
+    <form (click)="closePostUserForm(postUserNgForm)" (click)="resetForm(postUserNgForm)" method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+}

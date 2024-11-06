@@ -1,0 +1,156 @@
+<div class="navbar shadow-md p-0 fixed z-30 bg-neutral">
+    <div class="navbar-start">
+        @if(currentRoute === '/login' || currentRoute === '/privacy'){
+            <button routerLink="/login" class="btn px-1 mx-2 h-14 btn-ghost">
+               <svg
+               class="w-[4.5rem] h-[3rem] text-secondary hover:text-primary"
+               stroke="currentColor"
+               fill="currentColor"
+               viewBox="0 0 79.375 59.531256"
+               version="1.1"
+               id="svg1"
+               xmlns="http://www.w3.org/2000/svg"
+               xmlns:svg="http://www.w3.org/2000/svg">
+              <defs
+                 id="defs1" />
+              <g
+                 id="main"
+                 transform="translate(0.00537156,-0.37467635)">
+                <g
+                   id="left_cup">
+                  <path
+                     style="stroke-width:0.805127;stroke-dasharray:none;stroke-opacity:1"
+                     d="M 5.0127817,42.05478 10.291908,14.689522"
+                     id="left_cup_left_string-path" />
+                  <path
+                     style="stroke-width:0.805127;stroke-dasharray:none;stroke-opacity:1"
+                     d="M 15.786505,41.839309 10.184171,14.689522"
+                     id="left_cup_right_string-path" />
+                  <path
+                     style="stroke-width:0.315193"
+                     d="m 4.4740956,41.408359 c 0.1121611,8.04712 11.9733684,8.186753 11.9588344,0"
+                     id="left_cup-path" />
+                </g>
+                <g
+                   id="right_cup">
+                  <path
+                     style="stroke-width:0.805127;stroke-dasharray:none;stroke-opacity:1"
+                     d="M 64.007388,42.089931 69.286513,14.724673"
+                     id="right_cup_left_string-path" />
+                  <path
+                     style="stroke-width:0.805127;stroke-dasharray:none;stroke-opacity:1"
+                     d="M 74.781111,41.874459 69.178776,14.724673"
+                     id="right_cup_right_string-path" />
+                  <path
+                     style="stroke-width:0.315193"
+                     d="m 63.468702,41.44351 c 0.112158,8.04712 11.973369,8.186753 11.958833,0"
+                     id="right_cup-path" />
+                </g>
+                <g
+                   id="stem">
+                  <path
+                     style="stroke-width:0.427954"
+                     d="m 2.6735182,12.32217 c 35.3130338,5.865735 38.9828748,5.566658 73.8774828,0 12.292216,-1.960951 -24.468624,7.791947 -36.79612,7.801899 C 27.33278,20.134109 -9.710052,10.265175 2.6735182,12.32217 Z"
+                     id="stem-path" />
+                </g>
+                <g
+                   id="edge">
+                  <rect
+                     style="stroke-width:0.293517"
+                     id="edge_right-path"
+                     width="3.5553291"
+                     height="40.361664"
+                     x="40.265095"
+                     y="18.224566"
+                     rx="0"
+                     ry="0" />
+                  <rect
+                     style="stroke-width:0.293517"
+                     id="edge_left-rect"
+                     width="3.5553291"
+                     height="40.361664"
+                     x="36.041103"
+                     y="18.242157"
+                     rx="0"
+                     ry="0" />
+                </g>
+                <g
+                   id="handler">
+                  <rect
+                     style="stroke-width:0.594852"
+                     id="pommel_bottom-rect"
+                     width="2.6251252"
+                     height="2.1654885"
+                     x="38.384792"
+                     y="2.7210407"
+                     rx="2.6776276"
+                     ry="0" />
+                  <rect
+                     style="stroke-width:0.473626"
+                     id="pommel_top-rect"
+                     width="3.8979135"
+                     height="2.8660874"
+                     x="37.74839"
+                     y="0.55555332"
+                     ry="1.2957258"
+                     rx="1.9489567" />
+                  <path
+                     style="stroke-width:0.478393"
+                     d="m 37.748402,4.6898636 c 0.870303,3.890392 0.58595,8.8475514 0.07955,12.1849704 -0.209879,1.383196 4.238836,1.289335 3.977464,-0.08403 -0.598079,-3.142552 -0.711205,-8.0820924 -0.07955,-12.1009364 0.21716,-1.381655 -4.282383,-1.363024 -3.977464,10e-7 z"
+                     id="grip-path" />
+                  <path
+                     style="stroke-width:0.392966"
+                     d="m 30.449814,26.088651 c -3.384845,3.027612 2.32653,-9.814396 9.642523,-9.692441 7.746068,0.129116 13.337004,12.762938 9.903127,9.692441 -9.666177,-8.643281 -9.708857,-8.798636 -19.54565,0 z"
+                     id="guard-path" />
+                </g>
+                <g
+                   id="base">
+                  <rect
+                     style="stroke-width:0.886202"
+                     id="base_bottom-rect"
+                     width="16.469173"
+                     height="4.0505428"
+                     x="31.41732"
+                     y="55.339931"
+                     rx="0"
+                     ry="0.35503116" />
+                  <rect
+                     style="stroke-width:0.770484"
+                     id="base_top-rect"
+                     width="13.24171"
+                     height="3.8080733"
+                     x="33.060173"
+                     y="52.436325"
+                     rx="0"
+                     ry="1.2661389" />
+                </g>
+              </g>
+               </svg>
+                <h1 class="text-2xl font-normal ml-1">LawOps</h1>
+            </button>
+        }
+    </div>
+    <div class="navbar-center">
+        @if(currentRoute === '/dashboard'){
+            <p class=" text-secondary/85 text-xl">Processos</p>
+        }
+        @if(currentRoute === '/finances'){
+            <p class=" text-secondary/85 text-xl">Finanças</p>
+        }
+
+        @if(currentRoute === '/announcements'){
+            <p class=" text-secondary/85 text-xl">Comunicados</p>
+        }
+
+        @if(currentRoute === '/management'){
+            <p class=" text-secondary/85 text-xl">Gerenciamento</p>
+        }
+
+        @if(currentRoute === '/user-profile'){
+            <p class=" text-secondary/85 text-xl">Perfil</p>
+        }
+    </div>
+    <div class="navbar-end">
+
+    </div>
+</div>

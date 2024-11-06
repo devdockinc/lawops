@@ -1,0 +1,395 @@
+<h1 class="self-center text-xl mb-8 mt-10 font-semibold text-center">Histórico de finanças</h1>
+<div class="flex flex-col">
+    <div class="flex flex-col px-2 items-center gap-2 w-full">
+        <div class="grid grid-cols-1 min-[360px]:grid-cols-2 sm:grid-cols-4 justify-self-stretch gap-2 w-full">
+          <select  [(ngModel)]="typeFilter" class="select" (change)="applyFilters()">
+            <option selected value="all">Todos os tipos</option>
+            <option value="IN">Receita</option>
+            <option value="OUT">Despesa</option>
+          </select>
+          <select [(ngModel)]="statusFilter" class="select" (change)="applyFilters()">
+            <option value="all" selected>Todos os status</option>
+            <option value="PA">Pago</option>
+            <option value="PE">Pendente</option>
+            <option value="CA">Cancelado</option>
+          </select>
+          <select [(ngModel)]="valueSort" (change)="applyFilters('value')" class="select">
+            <option value="none">Valores padrão</option>
+            <option value="highest">Valores maiores</option>
+            <option value="lowest">Valores menores</option>
+          </select>
+          <select [(ngModel)]="dateSort" class="select" (change)="applyFilters('date')">
+            <option value="newest" selected>Mais recentes</option>
+            <option value="oldest">Mais antigos</option>
+          </select>
+        </div>
+        <div class="flex flex-col items-center sm:flex-row gap-2 w-full mb-4">
+          <div class="flex w-full gap-2 items-center mr-1">
+            <label class="input shadow-sm w-full bg-base-100 flex items-center pr-1">
+              <input [(ngModel)]="searchFilter" class="placeholder:text-secondary/50 grow w-full" placeholder="pesquisa"/>
+              <button (click)="clearSearch()" class="btn btn-xs btn-circle btn-ghost">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                    <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                </svg>                      
+              </button>
+            </label>
+            <button (click)="applyFilters()" class="btn btn-primary btn-square">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+              </svg>                      
+            </button>
+          </div>
+          <div class="flex gap-2">
+            <button (click)="showCards()" [ngClass]="cards ? 'btn-active' : ''" class="btn btn-primary btn-outline btn-square">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+              </svg>                    
+            </button>
+            <button (click)="showTable()" [ngClass]="!cards ? 'btn-active' : ''" class="btn btn-primary btn-outline btn-square">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0 1 12 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5M12 14.625v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 14.625c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m0 1.5v-1.5m0 0c0-.621.504-1.125 1.125-1.125m0 0h7.5" />
+              </svg>                    
+            </button>
+          </div>
+        </div>
+      </div>         
+          @if (cards) {
+            @if (bills$ | async; as bills){
+              @if(bills.results.length > 0){
+                <div class="grid grid-cols-1 py-4 mb-4 p-4 min-[530px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-8 gap-x-4 max-h-96 overflow-y-auto">
+                  @for (bill of bills.results; let i = $index; track bill.id) {
+                    <div class="rounded-box h-fit shadow-lg relative overflow-x-visible bg-base-100 text-primary-content">
+                      <div class="absolute -right-3 -top-3 z-10">
+                        <button (click)="handleDropdownClick($event)" (click)="elInService.toggleDropdown('bill_options', i)" class="btn z-10 bg-base-100 btn-sm btn-circle dropdown-button">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75a4.5 4.5 0 0 1-4.884 4.484c-1.076-.091-2.264.071-2.95.904l-7.152 8.684a2.548 2.548 0 1 1-3.586-3.586l8.684-7.152c.833-.686.995-1.874.904-2.95a4.5 4.5 0 0 1 6.336-4.486l-3.276 3.276a3.004 3.004 0 0 0 2.25 2.25l3.276-3.276c.256.565.398 1.192.398 1.852Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.867 19.125h.008v.008h-.008v-.008Z" />
+                          </svg> 
+                          <div [ngClass]="elInService.isDropdownOpen('bill_options', i) ? 'flex' : 'hidden'" class="absolute z-50 border-secondary/20 border -top-1 right-9 bg-base-100 rounded-lg p-1 flex">
+                            <button (click)="edit(bill.id, bill.bill_type, bill.category_details?.id, bill.status, bill.description, bill.observation, bill.stringValue, bill.payment_date, bill.due_date, bill.lawsuit)" class="btn btn-sm btn-circle">
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                              </svg>                              
+                            </button>
+                            <button (click)="deleteBill(bill.id)" class="btn btn-sm text-error btn-circle">
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                              </svg>                              
+                            </button>
+                          </div>                                        
+                        </button>
+                      </div>   
+                      <div class="stat indicator place-items-center w-full">
+                        <div class="stat-title text-center text-secondary w-full truncate">{{bill.description}}</div>
+                        @if(bill.bill_type === 'receita'){
+                          <div class="stat-value text-3xl text-success w-full text-center truncate">R$ {{bill.stringValue}}</div>
+                        } @else {
+                          <div class="stat-value text-3xl text-error w-full text-center truncate">R$ {{bill.stringValue}}</div>
+                        }
+                        <div class="stat-actions mt-3">
+                          <button (click)="openBillModal(i)" class="btn btn-sm btn-neutral">Detalhes</button>
+                        </div>
+                        <div class="indicator-item indicator-end indicator-bottom flex items-center translate-x-1.5 gap-1">
+                          <!-- @if (bill.lawsuit){
+                              <span class="badge bg-base-100 border border-secondary">processo</span>
+                          } -->
+                          <span class="badge bg-info text-base-100 font-bold">{{bill.status}}</span>
+                          <span [ngClass]="{
+                              'badge-success': bill.bill_type === 'receita',
+                              'badge-error': bill.bill_type === 'despesa',
+                          }" class="badge text-base-100 font-bold">{{bill.bill_type}}</span>
+                        </div>
+                      </div>
+                      
+                    </div>             
+                    <dialog [ngClass]="billModal[i] ? 'modal-open' : ''" class="modal">
+                      <div class="modal-box indicator overflow-visible max-w-2xl bg-neutral px-4 py-8">
+                        <div class="indicator-item indicator-end indicator-bottom flex items-center translate-x-1.5 gap-1">
+                          @if (bill.lawsuit){
+                              <span class="badge bg-base-100 border border-secondary">processo</span>
+                          }
+                          <span class="badge bg-info font-bold text-base-100">{{bill.status}}</span>
+                          <span [ngClass]="{
+                              'badge-success': bill.bill_type === 'receita',
+                              'badge-error': bill.bill_type === 'despesa',
+                          }" class="badge text-base-100 font-bold">{{bill.bill_type}}</span>
+                        </div>  
+                        <form method="dialog">
+                            <button (click)="closeBillModal(i)" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                        </form>
+                          <div class="card grow">
+                            <h2 class="card-title text-center mb-4 self-center">{{bill.description}}</h2>
+                              <div class="card-body overflow-x-auto w-full gap-8 p-0">
+                                  <div class="hover:text-primary cursor-default">
+                                    <div class="flex flex-row items-center gap-2">
+                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                                      </svg>
+                                      <p class="font-bold">Observação</p>
+                                    </div>
+                                    @if (bill.observation) {                                     
+                                      <p class="text-secondary/85">{{bill.observation}}</p>
+                                    } @else {
+                                      <p class="text-secondary/85">Não</p>
+                                    }
+                                  </div>
+                                  <div class="flex flex-wrap justify-between gap-8">
+                                    <div class="hover:text-primary cursor-default">
+                                      <div class="flex flex-row items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z" />
+                                        </svg>
+                                        <p class="font-bold">Processo</p> 
+                                      </div>
+                                      @if (bill.lawsuit) {
+                                        <p class="text-secondary/85">{{bill.lawsuit}}</p>
+                                      } @else {
+                                        <p class="text-secondary/85">Não</p>
+                                      }
+                                    </div>
+                                    <div class="hover:text-primary cursor-default">
+                                      <div class="flex flex-row items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                          <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                                        </svg>                                      
+                                        <p class="font-bold">Data de Pagamento</p> 
+                                      </div>
+                                      @if (bill.payment_date) {
+                                        <p class="text-secondary/85">{{bill.payment_date}}</p>
+                                      } @else {
+                                        <p class="text-secondary/85">Não</p>
+                                      }
+                                    </div>
+                                    <div class="hover:text-primary cursor-default">
+                                      <div class="flex flex-row items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                          <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                                        </svg>                                      
+                                        <p class="font-bold">Data de Vencimento</p> 
+                                      </div>
+                                      @if (bill.due_date) {
+                                        <p class="text-secondary/85">{{bill.due_date}}</p>
+                                      } @else {
+                                        <p class="text-secondary/85">Não</p>
+                                      }
+                                    </div>  
+                                    <div class="hover:text-primary cursor-default">
+                                      <div class="flex flex-row items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                          <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
+                                          <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" />
+                                        </svg>                                                                             
+                                        <p class="font-bold">Categoria</p> 
+                                      </div>
+                                      @if (bill.category_details) {
+                                        <p class="text-secondary/85">{{bill.category_details.name}}</p>
+                                      } @else {
+                                        <p class="text-secondary/85">Não</p>
+                                      }
+                                    </div>
+                                  </div>
+                                  
+                                </div>
+                                @if (bill.stringValue) {
+                                  @if (bill.bill_type === 'receita'){
+                                    <p class="text-3xl font-bold self-center mt-4 text-success text-clip">R$ {{bill.stringValue}}</p>  
+                                  } @else {
+                                    <p class="text-3xl font-bold self-center mt-4 text-error text-clip">R$ {{bill.stringValue}}</p>  
+                                  }    
+                                }
+                                <div class="flex items-end justify-between w-full">
+                                  <p>{{bill.created_by.first_name}}</p>
+                                  <div class="self-end">
+                                    <div class="cursor-pointer hover:text-primary m-2 dropdown-button text-secondary/60" (click)="handleDropdownClick($event)" (click)="elInService.toggleDropdown('bill_date', i)">{{bill.created_since}}</div>
+                                    <ul class="z-10 absolute right-0 menu p-2 shadow bg-base-100/85 rounded-box max-w-72" [ngClass]="elInService.isDropdownOpen('bill_date', i) ? 'flex' : 'hidden'" #dropdown dropdownClickOut>
+                                      <li><a>Criação: {{bill.created_at_formatted}}</a></li>
+                                      <li><a>Atualização: {{bill.updated_at_formatted}}</a></li>
+                                    </ul>
+                                  </div>
+                                </div>
+                          </div>
+                      </div>
+                      <form (click)="closeBillModal(i)" method="dialog" class="modal-backdrop">
+                          <button>close</button>
+                      </form>
+                  </dialog>
+                  }
+                </div>
+
+                <div class="join self-center mb-8" >
+                  @if(pages){
+                      @for(page of pages; let i = $index; let lastI = $last; track i){
+                        <button (click)="updatePages(page)" [ngClass]="{'btn-active btn-primary': currentPage === page}" class="join-item btn btn-active">{{page}}</button>
+                      }
+                  }
+                </div>
+              } @else {
+                <p class="self-center my-8 rounded-box border border-secondary/20 p-2 bg-base-100 mt-8">Não há finanças</p>
+              }
+      
+          } @else {
+            <div class="grid pt-8 gap-4 grid-cols-1 p-4 min-[500px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              <div class="skeleton min-h-32 min-w-32"></div>
+              <div class="skeleton hidden min-[500px]:block min-h-32 min-w-32"></div>
+              <div class="skeleton hidden sm:block min-h-32 min-w-32"></div>
+              <div class="skeleton hidden lg:block min-h-32 min-w-32"></div>
+      
+            </div>
+            }
+          } @else {
+            @if (bills$ | async; as bills){
+              @if (bills.results.length > 0) {
+                <div class="overflow-x-auto pb-1 mx-2 mb-1 mt-4">
+                  <table class="table bg-base-100 shadow-lg">
+                    <!-- head -->
+                    <thead>
+                      <tr>
+                        <th>Descrição</th>
+                        <th>Tipo</th>
+                        <th>Status</th>
+                        <th>Valor</th>
+                        <th>Processo</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (bill of bills.results; let i = $index; track bill.id) {
+                        <tr>
+                          <td>{{bill.description}}</td>
+                          <td>{{bill.bill_type}}</td>
+                          <td>{{bill.status}}</td>
+                          @if (bill.bill_type === 'receita') {
+                            <td class="font-bold text-success">{{bill.stringValue}}</td>
+                          } @else{
+                            <td class="font-bold text-error">{{bill.stringValue}}</td>
+                          }
+      
+                          @if (bill.lawsuit){
+                            <td>{{bill.lawsuit}}</td>
+                          } @else {
+                            <td>Não</td>
+                          }
+                          <td>
+                            <button (click)="openBillModal(i)" class="btn btn-sm btn-primary">detalhes</button>
+                          </td>
+                          <td>
+                            <button (click)="edit(bill.id, bill.bill_type, bill.category_details?.id, bill.status, bill.description, bill.observation, bill.stringValue, bill.payment_date, bill.due_date, bill.lawsuit)" class="btn btn-sm btn-ghost btn-circle">
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                              </svg>                              
+                            </button>
+                          </td>
+                          <td>
+                            <button (click)="deleteBill(bill.id)" class="btn btn-ghost btn-circle btn-sm text-error">
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                              </svg> 
+                            </button>                             
+                          </td>
+                        </tr>
+      
+                        <dialog [ngClass]="billModal[i] ? 'modal-open' : ''"  class="modal">
+                          <div class="modal-box indicator w-11/12 max-w-full bg-neutral px-4 py-8 sm:px-8 min-[400px]:p-8">
+                            <form method="dialog">
+                                <button (click)="closeBillModal(i)" class="btn btn-sm btn-circle text-error btn-ghost absolute right-2 z-50 top-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-error">
+                                        <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                    </svg>                                  
+                                </button>
+                            </form>
+                            <div class="overflow-auto">
+                              <table class="table">
+                                <thead>
+                                  <tr>
+                                    <th>Descrição</th>
+                                    <th>Tipo</th>
+                                    <th>Status</th>
+                                    <th>Valor</th>
+                                    <th>Processo</th>
+                                    <th>Observação</th>
+                                    <th>Categoria</th>
+                                    <th>Data de criação</th>
+                                    <th>Última edição</th>
+                                    <th>Criado por</th>
+                                    <th>Pagamento</th>
+                                    <th>Vencimento</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td>{{bill.description}}</td>
+                                    <td>{{bill.bill_type}}</td>
+                                    <td>{{bill.status}}</td>
+                                    @if (bill.bill_type === 'receita') {
+                                      <td class="font-bold text-success">{{bill.stringValue}}</td>
+                                    } @else{
+                                      <td class="font-bold text-error">{{bill.stringValue}}</td>
+                                    }
+        
+                                    @if (bill.lawsuit){
+                                      <td>{{bill.lawsuit}}</td>
+                                    } @else {
+                                      <td>Não</td>
+                                    }
+                                    
+                                    @if (bill.observation) {
+                                      <td>{{bill.observation}}</td>
+                                    } @else {
+                                      <td>Não</td>
+                                    }
+      
+                                    @if (bill.category_details) {
+                                      <td>{{bill.category_details.name}}</td>
+                                    } @else {
+                                      <td>Não</td>
+                                    }
+      
+                                    
+                                      <td>{{bill.created_at_formatted}}</td>
+                                      @if(bill.updated_at_formatted){
+                                        <td>{{bill.updated_at_formatted}}</td>
+                                      } @else {
+                                        <td>Não</td>
+                                      }
+                                      <td>{{bill.created_by.first_name}}</td>
+      
+                                      @if(bill.payment_date){
+                                        <td>{{bill.payment_date}}</td>
+                                      } @else {
+                                        <td>Não</td>
+                                      }
+      
+                                      @if(bill.due_date){
+                                        <td>{{bill.due_date}}</td>
+                                      } @else{
+                                        <td>Não</td>
+                                      }
+                                    
+                                    
+                                  </tr>
+                                </tbody>   
+                              </table> 
+                            </div> 
+                          </div>
+                          <form (click)="closeBillModal(i)" method="dialog" class="modal-backdrop">
+                              <button>close</button>
+                          </form>
+                      </dialog>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+                <div class="join self-center mb-8" >
+                  @if(pages){
+                      @for(page of pages; let i = $index; let lastI = $last; track i){
+                        <button (click)="updatePages(page)" [ngClass]="{'btn-active btn-primary': currentPage === page}" class="join-item btn btn-active">{{page}}</button>
+                      }
+                  }
+                </div>
+              } @else {
+                <p class="self-center  my-8">Não há finanças</p>
+              }
+            } @else {
+              <div class="skeleton h-32 w-full mt-8"></div>
+              }
+          }  
+</div>

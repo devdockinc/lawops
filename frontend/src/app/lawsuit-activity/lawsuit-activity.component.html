@@ -1,0 +1,48 @@
+<div class="flex flex-col gap-4">
+    <div class="flex flex-col md:flex-row w-full items-center gap-2">
+        <div class="flex flex-col min-[500px]:flex-row w-full items-center gap-2">
+            <input [(ngModel)]="searchFilter" (input)="applyFilters()" class="input flex-grow w-full min-[500px]:w-3/6 shadow-sm bg-base-100 placeholder:text-secondary/50" placeholder="pesquisa"/>
+            <div class="grid grid-cols-1 w-full min-[500px]:w-3/6 min-[500px]:grid-cols-2 justify-self-stretch gap-2">
+                <select [(ngModel)]="dateSort" class="select w-full" (change)="applyFilters()">
+                    <option value="newest" selected>Mais recentes</option>
+                    <option value="oldest">Mais antigos</option>
+                </select>
+                <select [(ngModel)]="typeFilter" class="select w-full" (change)="applyFilters()">
+                    <option value="all" selected>Todos os tipos</option>
+                    <option value="ANDAMENTO">Andamento</option>
+                    <option value="PUBLICACAO">Publicação</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="overflow-x-auto max-h-96">
+        <table class="table table-pin-rows table-auto bg-base-100">
+          <!-- head -->
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Conteúdo</th>
+              <th>Data</th>
+              <th>Grau</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- row 1 -->
+             @if(activities){
+                 @for(activity of activities.results; track activity.id){
+                    <tr class="hover">
+                        <td class="align-top pt-6">{{activity.tipo}}</td>
+                        <td class="align-top pt-6 text-justify">{{activity.conteudo}}</td>
+                        <td class="align-top pt-6 whitespace-nowrap">{{activity.data}}</td>
+                        <td class="align-top pt-6">{{activity.fonte_grau_formatado}}</td>
+                    </tr>
+                 }
+             }
+          </tbody>
+        </table>
+      </div>
+
+      @if(activities.next){
+        <button (click)="loadMoreActivities(lawsuitId)" class="btn">Ver mais movimentações</button>
+      }
+</div>

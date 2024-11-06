@@ -1,0 +1,40 @@
+<div class="rounded-box bg-base-100 px-1 mt-8 py-1">
+    <div class="flex flex-row items-center gap-2 mx-2 my-1">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+        </svg>                                                                                                                                                                                                             
+        <p class="font-bold">Comentários</p>
+    </div>
+    <div class="w-full max-h-48 h-full flex flex-col overflow-y-auto rounded-box px-2 py-2 hover:text-primary">
+
+        @for (comment of comments.results; let i = $index; track i) {
+            <div class="flex flex-col text-secondary/85">
+                <div class="flex justify-between font-bold px-1 m-1">
+                    <p>{{comment.created_by.first_name}}</p>
+                </div>
+                <p class="rounded-box bg-neutral border border-secondary/5 p-2 min-h-12 flex items-center break">{{comment.comment}}</p>
+                <div class="relative self-end">
+                    <div class="cursor-pointer hover:text-primary m-1 text-sm dropdown-button text-secondary/60" (click)="elementInteractionService.toggleDropdown('comment', i)">{{comment.since}}</div>
+                    <ul class="z-[1] absolute -left-44 -top-4 menu p-2 shadow bg-base-100 border border-secondary/20 rounded-box w-max max-w-72" (click)="handleDropdownClick($event)" [ngClass]="elementInteractionService.isDropdownOpen('comment', i) ? 'flex' : 'hidden'" #dropdown dropdownClickOut>
+                        <li><a>{{comment.created_at}}</a></li>
+                    </ul>
+                </div>
+            </div>
+        } @empty {
+            <p class="mt-2 text-secondary/85">Não há comentários</p>
+        }
+
+        @if(comments.next){
+            <button (click)="loadMoreComments(lawsuitId)" class="btn btn-neutral self-center">Carregar mais comentários</button>
+        }
+
+    </div>
+</div>
+<form #commentForm="ngForm" (ngSubmit)="addComment(commentForm ,lawsuitId)" class="flex items-center my-1 gap-2">
+    <input name="comment" required [(ngModel)]="content" type="text" placeholder="Comentar" class="input w-full shadow-lg bg-base-100" />
+    <button [disabled]="commentForm.invalid" type="submit" class="btn shadow-lg btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>                                                      
+    </button>
+</form>

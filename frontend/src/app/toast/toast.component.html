@@ -1,0 +1,17 @@
+
+@if(toasts$ | async; as toasts){
+    <div class="toast z-[2147483647] fixed toast-end">
+        @for(toast of toasts; track $index){
+            @if(toast.status !== 200){
+                <div (click)="toastService.removeToast(toast)" class="alert alert-error">
+                    <span class="text-white w-full break whitespace-normal font-bold">{{toast.message}}</span>
+                </div>
+            } @else {
+                <div (click)="toastService.removeToast(toast)" class="alert alert-success">
+                    <span class="text-white w-full break whitespace-normal font-bold">{{toast.message}}</span>
+                </div>
+            }
+
+        }
+    </div>
+}

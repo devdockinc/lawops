@@ -1,0 +1,117 @@
+@if(userProfile$ | async; as userProfile){
+        <div class="h-full flex flex-col items-center w-full gap-8 p-4 sm:p-8 text-secondary/85">
+            <div class="card w-full bg-neutral shadow-xl">
+                <div class="card-body sm:px-10 gap-10">
+                    <h1 class="card-title self-center font-medium text-2xl">Informações do perfil</h1>
+                    <div class="flex flex-wrap gap-8 justify-between">
+                        <div class="hover:text-primary cursor-default">
+                            <div class="flex flex-row items-center gap-2 hover:text-primary cursor-default">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.864 4.243A7.5 7.5 0 0 1 19.5 10.5c0 2.92-.556 5.709-1.568 8.268M5.742 6.364A7.465 7.465 0 0 0 4.5 10.5a7.464 7.464 0 0 1-1.15 3.993m1.989 3.559A11.209 11.209 0 0 0 8.25 10.5a3.75 3.75 0 1 1 7.5 0c0 .527-.021 1.049-.064 1.565M12 10.5a14.94 14.94 0 0 1-3.6 9.75m6.633-4.596a18.666 18.666 0 0 1-2.485 5.33" />
+                                </svg>                                                                            
+                                <p class="font-bold">Nome de usuário</p>                      
+                            </div>
+                            
+                            <p class="text-secondary/85">{{userProfile.results[0].username}}</p>                    
+                        </div>
+                        <div class="hover:text-primary cursor-default">
+                            <div class="flex flex-row items-center gap-2 hover:text-primary cursor-default">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 3.75H6.912a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H15M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859M12 3v8.25m0 0-3-3m3 3 3-3" />
+                                </svg>                                                                             
+                                <p class="font-bold">E-mail</p>                      
+                            </div>
+                            @if(userProfile.results[0].email){
+                                <p class="text-secondary/85">{{userProfile.results[0].email}}</p>                    
+                            } @else {
+                                <p class="text-secondary/85">Não definido</p>
+                            }
+                        </div>
+                        <div class="hover:text-primary cursor-default">
+                            <div class="flex flex-row items-center gap-2 hover:text-primary cursor-default">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z" />
+                                </svg>                                                                            
+                                <p class="font-bold">Nome</p>                      
+                            </div>
+                            @if(userProfile.results[0].first_name){
+                                <p class="text-secondary/85">{{userProfile.results[0].first_name}}</p>                    
+                            } @else {
+                                <p class="text-secondary/85">Não definido</p>
+                            }                
+                        </div>
+                        <div class="hover:text-primary cursor-default">
+                            <div class="flex flex-row items-center gap-2 hover:text-primary cursor-default">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z" />
+                                </svg>                                                                            
+                                <p class="font-bold">Sobrenome</p>                      
+                            </div>
+                            @if(userProfile.results[0].last_name){
+                                <p class="text-secondary/85">{{userProfile.results[0].last_name}}</p>                    
+                            } @else {
+                                <p class="text-secondary/85">Não definido</p>
+                            }    
+        
+                        </div>
+                    </div>
+                    <div class="flex gap-2 mt-6 justify-center">
+                        <button (click)="editUserInfo()" class="btn btn-primary">
+                            <p>Editar informações</p>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                            </svg>                      
+                        </button>
+                        <!-- <button class="btn btn-primary">
+                            <p>Mudar senha</p>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />
+                            </svg>                                         
+                        </button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        @if(patchUserForm$ | async; as patchUserForm1){
+            <dialog [ngClass]="patchUserForm1[0] ? 'modal-open' : ''" class="modal">
+                <div class="modal-box bg-neutral">
+                    <form method="dialog">
+                        <button (click)="closePatchUserForm(patchUserNgForm)" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                    </form>
+                    <form #patchUserNgForm="ngForm" (ngSubmit)="submitPatchUser(patchUserNgForm)" class="gap-4 flex flex-col">
+                        <h1 class="card-title self-center font-medium text-2xl">Edição de dados</h1>
+                        <label class="form-control w-full">
+                            <div class="label">
+                              <span class="label-text">E-mail</span>
+                            </div>
+                            <input [disabled]="(userFormSubmit$ | async) === true" [(ngModel)]="email" name="email"  type="email" placeholder="Ex: joao_silva" class="input w-full"/>
+                        </label>
+                        <label class="form-control w-full">
+                            <div class="label">
+                              <span class="label-text">Nome</span>
+                            </div>
+                            <input [disabled]="(userFormSubmit$ | async) === true" [(ngModel)]="name" name="name" type="text" placeholder="Ex: joao_silva" class="input w-full"/>
+                        </label>
+                        <label class="form-control w-full">
+                            <div class="label">
+                              <span class="label-text">Sobrenome</span>
+                            </div>
+                            <input [disabled]="(userFormSubmit$ | async) === true" [(ngModel)]="lastName" name="lastName" type="text" placeholder="Ex: joao_silva" class="input w-full"/>
+                        </label>
+                        @if(userFormSubmit$ | async){
+                            <span class="loading loading-spinner min-h-10 self-center bg-primary loading-lg"></span>
+                          } @else {
+                            <button type="submit" [disabled]="patchUserNgForm.invalid" type="submit" class="btn btn-primary self-center">
+                                <p>Enviar</p>
+                            </button> 
+                        }
+                    </form>
+                </div>
+                <form (click)="closePatchUserForm(patchUserNgForm)"  method="dialog" class="modal-backdrop">
+                    <button>close</button>
+                </form>
+            </dialog>
+        }
+}

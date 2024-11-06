@@ -1,0 +1,382 @@
+<div class="flex flex-col w-full">
+    <div class="flex lg:h-14 flex-col lg:flex-row items-center lg:items-start justify-start w-full">
+        <div class="flex flex-row gap-2 w-full lg:w-3/5 items-center justify-center mt-4">
+            <div class="flex flex-row justify-center w-full ml-2">
+                <label class="input min-w-10 flex shadow-sm w-full bg-neutral items-center pr-1" for="">
+                    <input [(ngModel)]="searchFilter" class="placeholder:text-secondary/50 grow w-full" placeholder="pesquisa"/>
+                    <button (click)="clearSearch()" class="btn btn-xs btn-circle btn-ghost">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                            <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                        </svg>                      
+                    </button>
+                </label>
+                <button (click)="applyFilters()" class="btn btn-primary ml-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>                  
+                </button>
+            </div>
+    
+            <button (click)="showFilters()" class="btn btn-primary mr-2 lg:mr-0">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+                </svg>                               
+            </button>
+        </div>
+        
+        <div id="filters" class="w-full flex justify-center transition-all max-h-0 overflow-hidden">
+            <div class="grid w-full grid-cols-1 min-[360px]:grid-cols-2 mb-4 mt-4 px-2 gap-2">
+                <select [(ngModel)]="areaFilter" (change)="applyFilters()" class="select bg-neutral w-full">
+                    <option value="all" selected>Todas as areas</option>
+                    <option value="civel">Cível</option>
+                    <option value="criminal">Criminal</option>
+                    <option value="trabalhista">Trabalhista</option>
+                    <option value="administrativo">Administrativo</option>
+                    <option value="tributario">Tributário</option>
+                    <option value="eleitoral">Eleitoral</option>
+                    <option value="ambiental">Ambiental</option>
+                    <option value="consumerista">Consumerista</option>
+                    <option value="familiar">Familiar</option>
+                    <option value="constitucional">Constitucional</option>
+                </select>
+                <select [(ngModel)]="monitoringFilter" (change)="applyFilters()" class="select bg-neutral w-full">
+                    <option value="all" selected>Todos os processos</option>
+                    <option value="true">Monitorados</option>
+                    <option value="false">Não monitorados</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    @if (processos$ | async; as processos ) {
+        @if (processos.results){
+            @if(processos.results.length > 0){
+                <div class="w-full px-2 mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  justify-center gap-8">
+                    @for(processo of processos.results; let i = $index ; track processo.id){
+                        <div class="card shadow-xl bg-neutral">
+                            <div class="card-body flex-wrap p-4 min-[400px]:p-8 gap-8">
+                                @if(isSuperuser()){
+                                    <button (click)="toggleDropdown(i, processo.lawops_lawsuit.update_interval, processo.lawops_lawsuit.automatic_update, processo.lawops_lawsuit.monitoring_id)" class="dropdown-button btn btn-ghost btn-circle btn-sm absolute top-3.5 right-0">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 pointer-events-none">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
+                                        </svg>
+                                    </button> 
+                                    <div (click)="handleDropdownClick($event)" [ngClass]="elementInteractionService.isDropdownOpen('card', i) ? 'flex' : 'hidden'" #dropdown dropdownClickOut class="absolute z-10 max-w-xs right-1 top-12 card bg-neutral/95 border border-secondary/30">
+                                        <div class="card-body p-2">
+                                            <h1 class="card-title self-center">Atualizações</h1>
+                                            <label for="autoUpdateSelect" class="form-control w-full max-w-xs">
+                                                <div class="label">
+                                                  <span class="label-text text-secondary/60">Atualização automática</span>
+                                                </div>
+                                                <select id="autoUpdateSelect" [(ngModel)]="autoUpdate" class="select select-bordered">
+                                                    <option value="no">Não</option>
+                                                    <option value="yes">Sim</option>
+                                                </select>
+                                            </label>
+                                            <label for="autoFrequencySelect" class="form-control w-full max-w-xs">
+                                                <div class="label">
+                                                    <span class="label-text text-secondary/60">Frequência de atualização</span>
+                                                </div>
+                                                <select id="autoFrequencySelect" [(ngModel)]="autoFrequency" class="select select-bordered">
+                                                    <option value="NA">Não</option>
+                                                    <option value="DA">Diariamente</option>
+                                                    <option value="WE">Semanalmente</option>
+                                                </select>
+                                            </label>
+                                            <button (click)="autoUpdateProcess(processo.lawops_lawsuit.id, processo.lawops_lawsuit.monitoring_id, processo.lawops_lawsuit.cnj_number)" [disabled]="((autoUpdate === 'yes' && autoFrequency === 'NA') || (autoUpdate === 'no' && autoFrequency !== 'NA')) || autoFrequency === processo.lawops_lawsuit.update_interval" class="btn btn-primary mt-2 self-center">
+                                                <p>Aplicar</p>
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3" />
+                                                </svg>                                  
+                                            </button>
+                                            <div class="flex flex-col border-t border-secondary/10 my-4">
+                                                <p class="text-secondary/60 text-sm ml-2 my-2">Atualização manual</p>
+                                                <button class="btn btn-primary self-center">
+                                                    <p>Atualizar agora</p>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                                    </svg>                                      
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div> 
+                                }
+                                                                                                                    
+                        
+                                <h2 class="card-title self-center text-center px-4 font-bold">{{processo.numero_cnj}}</h2>
+                        
+                                @if(processo.titulo_polo_ativo && processo.titulo_polo_passivo){
+                                <div class="hover:text-primary cursor-default">
+                                    <div class="flex flex-row items-center gap-2 hover:text-primary cursor-default">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                                        </svg>                                                   
+                                        <p class="font-bold">Partes envolvidas</p>                      
+                                    </div>
+                                    
+                                        <p class="text-secondary/85">{{processo.titulo_polo_ativo}}<span class="font-extrabold mx-2">x</span>{{processo.titulo_polo_passivo}}</p>            
+                                   
+                                </div>
+                                } @else {
+                                    @if(processo.partes){
+                                        <div class="hover:text-primary cursor-default">
+                                            <div class="flex flex-row items-center gap-2 hover:text-primary cursor-default">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                                                </svg>                                                   
+                                                <p class="font-bold">Partes envolvidas</p>                      
+                                            </div>
+                                            
+                                                <p class="text-secondary/85">{{processo.partes[0].nome}}<span class="font-extrabold mx-2">x</span>{{processo.partes[1].nome}}</p>            
+                                           
+                                        </div>
+                                    }
+                                }
+            
+                                <div class="flex flex-wrap md:flex-nowrap md:flex-col gap-8 justify-between flex-grow">
+                                    <div class="hover:text-primary cursor-default">
+                                        <div class="flex flex-row items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" />
+                                            </svg>                                                                                                                                                           
+                                            <p class="font-bold">Tipo do processo</p>
+                                        </div>
+                     
+                                        @if (processo.area){
+                                            <p class="text-secondary/85">{{processo.area[0]}}</p>
+                                        } @else {
+                                            <p class="text-secondary/85">Não disponível</p>
+                                        }                         
+                                    </div>
+                       
+                                    <div class="hover:text-primary cursor-default">
+                                        
+                                        <div class="flex flex-row items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0 0 12 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 0 1-2.031.352 5.988 5.988 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.971Zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 0 1-2.031.352 5.989 5.989 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.971Z" />
+                                            </svg>                                              
+                                            <p class="font-bold">Órgão Julgador</p>
+                                        </div>
+            
+                                        @if(processo.orgao_julgador){
+                                            <p class="text-secondary/85">{{processo.orgao_julgador[0]}}</p>
+                                        } @else {
+                                            <p class="text-secondary/85">Não disponível</p>
+                                        }
+                                        
+                                    </div>  
+            
+                                    <div class="hover:text-primary cursor-default">
+                                        <div class="flex flex-row items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                                            </svg>                                                             
+                                            <p class="font-bold">Próx. audiência</p>
+                                        </div>
+                                        <p class="text-secondary/85">a</p>
+                                    </div>
+                                </div>
+                                                      
+                                <div class="flex flex-row w-full items-center justify-between">
+                                    <button class="btn btn-ghost text-primary">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                        </svg>                                  
+                                    </button>
+                                    <button class="btn btn-primary w-28 self-center" (click)="openLawsuitModal(i)">Detalhes</button>
+                                    <div class="flex flex-col items-center justify-center">
+                                        <button class="btn btn-ghost text-primary">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+                                            </svg>                                  
+                                        </button>
+                                    </div>
+                                </div>        
+                                <dialog [ngClass]="lawsuitModal[i] ? 'modal-open' : ''" class="modal">
+                                    <div class="modal-box max-h-[100vh-1rem] flex flex-col max-w-none bg-neutral px-1 pt-8 pb-2">
+                                        <form method="dialog">
+                                            <button (click)="closeLawsuitModal(i)" class="btn btn-sm btn-circle btn-ghost absolute right-1 top-1">✕</button>
+                                        </form>
+                                        <h2 class="card-title text-center self-center mb-2 px-8">{{processo.numero_cnj}}</h2>
+                                        <div role="tablist" class="tabs self-center mb-8">
+                                            <a [ngClass]="activity[i] ? 'border-secondary/20' : 'border-primary'" (click)="closeActivity(i)" role="tab" class="tab border-b-2 tab-border">Detalhes</a>
+                                            <a [ngClass]="activity[i] ? 'border-primary' : 'border-secondary/20'" (click)="showActivity(i)" role="tab" class="tab border-b-2 tab-border">Movimentações</a>
+                                        </div>
+                                        <div [ngClass]="activity[i] ? 'hidden' : ''" class="flex flex-col overflow-y-auto w-full px-1">
+                                            <div class="flex flex-col w-full gap-10 px-4">
+                                                @if(processo.titulo_polo_ativo && processo.titulo_polo_passivo){
+                                                    <div class="hover:text-primary cursor-default">
+                                                        <div class="flex flex-row items-center gap-2 hover:text-primary cursor-default">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                                                            </svg>                                                   
+                                                            <p class="font-bold">Partes envolvidas</p>                      
+                                                        </div>
+                                                        
+                                                            <p class="text-secondary/85">{{processo.titulo_polo_ativo}}<span class="font-extrabold mx-2">x</span>{{processo.titulo_polo_passivo}}</p>            
+                                                        
+                                                    </div>
+                                                    } @else {
+                                                        @if(processo.partes){
+                                                            <div class="hover:text-primary cursor-default">
+                                                                <div class="flex flex-row items-center gap-2 hover:text-primary cursor-default">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                                                                    </svg>                                                   
+                                                                    <p class="font-bold">Partes envolvidas</p>                      
+                                                                </div>
+                                                                
+                                                                    <p class="text-secondary/85">{{processo.partes[0].nome}}<span class="font-extrabold mx-2">x</span>{{processo.partes[1].nome}}</p>            
+                                                                
+                                                            </div>
+                                                        }
+                                                    }
+                                                <div class="flex flex-wrap gap-11 justify-between flex-grow">
+                                                    <div class="hover:text-primary cursor-default">
+                                                        <div class="flex flex-row items-center gap-2">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" />
+                                                            </svg>                                                                                                                                                           
+                                                            <p class="font-bold">Tipo do processo</p>
+                                                        </div>
+                                                        @if (processo.area){
+                                                            <p class="text-secondary/85">{{processo.area[0]}}</p>
+                                                        } @else {
+                                                            <p class="text-secondary/85">Não disponível</p>
+                                                        }                            
+                                                    </div>
+                                        
+                                                    <div class="hover:text-primary cursor-default">
+                                                        
+                                                        <div class="flex flex-row items-center gap-2">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0 0 12 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 0 1-2.031.352 5.988 5.988 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.971Zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 0 1-2.031.352 5.989 5.989 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.971Z" />
+                                                            </svg>                                              
+                                                            <p class="font-bold">Órgão Julgador</p>
+                                                        </div>
+                            
+                                                        @if(processo.orgao_julgador){
+                                                            <p class="text-secondary/85">{{processo.orgao_julgador[0]}}</p>
+                                                        } @else {
+                                                            <p class="text-secondary/85">Não disponível</p>
+                                                        }
+                                                        
+                                                    </div>
+                                                        
+                            
+                                                    <div class="hover:text-primary cursor-default">
+                                                        <div class="flex flex-row items-center gap-2">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                                                            </svg>                                                             
+                                                            <p class="font-bold">Próx. audiência</p>
+                                                        </div>
+                                                        <p class="text-secondary/85">a</p>
+                                                    </div>                          
+                                                </div>
+                
+                                                <div class="flex flex-wrap gap-11 justify-between flex-grow">
+                                                    <div class="hover:text-primary cursor-default">
+                                                        <div class="flex flex-row items-center gap-2">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                                                                </svg>                                                                                                                                                               
+                                                            <p class="font-bold">Segredo de justiça</p>
+                                                        </div>
+                                                            @if (processo.segredo_justica[0] === true){
+                                                                <p class="text-secondary/85">Sim</p>
+                                                            } 
+                                                            @if (processo.segredo_justica[0] === false) {
+                                                                <p class="text-secondary/85">Não</p>
+                                                            } @else {
+                                                                <p class="text-secondary/85">Não disponível</p>
+                                                            }
+                                                        
+                                                    </div>
+                
+                                                    <div class="hover:text-primary cursor-default">
+                                                        <div class="flex flex-row items-center gap-2">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                                            </svg>                                                                          
+                                                            <p class="font-bold">Valor da ação</p>
+                                                        </div>
+                                                        @if (processo.valor){
+                                                            <p class="text-secondary/85">{{processo.valor[0]}}</p>
+                                                        } @else {
+                                                            <p class="text-secondary/85">Não disponível</p>
+                                                        }
+                                                    
+                                                        
+                                                    </div>
+                
+                                                                
+                                                    @if(processo.data_inicio){
+                                                        <div class="hover:text-primary cursor-default">
+                                                            <div class="flex flex-row items-center gap-2">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.125 2.25h-4.5c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125v-9M10.125 2.25h.375a9 9 0 0 1 9 9v.375M10.125 2.25A3.375 3.375 0 0 1 13.5 5.625v1.5c0 .621.504 1.125 1.125 1.125h1.5a3.375 3.375 0 0 1 3.375 3.375M9 15l2.25 2.25L15 12" />
+                                                                </svg>                                                                                                          
+                                                                <p class="font-bold">Data de protocolo</p>
+                                                            </div>
+                                                            
+                                                                <p class="text-secondary/85">{{processo.data_inicio}}</p>                        
+                                                            
+                                                            
+                                                        </div>
+                                                        }
+                    
+                                                </div>
+                
+                
+                                                @if (processo.urls) {                                        
+                                                    <div class="hover:text-primary cursor-default">
+                                                        <div class="flex flex-row items-center gap-2">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+                                                            </svg>                                                                                                                              
+                                                            <p class="font-bold">Fontes</p>
+                                                        </div>
+                                                        @for (url of processo.urls; track $index){
+                                                            <a target="_blank" href="{{url}}"><p class="hover:underline break hover:text-primary text-secondary/85">{{url}}</p></a>
+                                                        }
+                                                    </div>  
+                                                
+                                                }
+            
+                                            </div>
+
+                                            <lawsuit-comments [lawsuitId]="processo.lawops_lawsuit.id" [comments]="(getComments(processo.lawops_lawsuit.id) | async)" ></lawsuit-comments>
+                                        </div>
+                                        <lawsuit-activity class="flex flex-col overflow-y-auto w-full px-1" [lawsuitId]="processo.id" [activities]="(getActivities(processo.id) | async)" [rawActivities]="(getActivities(processo.id) | async)" [ngClass]="activity[i] ? '' : 'hidden'"></lawsuit-activity>
+                                    </div>
+                                    <form (click)="closeLawsuitModal(i)" method="dialog" class="modal-backdrop">
+                                        <button>close</button>
+                                    </form>
+                                </dialog>        
+                            </div>
+                        </div>
+                    } 
+                </div>
+                <div class="join self-center my-8" >
+                    @if(pages){
+                        @for(page of pages; let i = $index; let lastI = $last; track i){
+                          <button (click)="updatePages(page)" [ngClass]="{'btn-active btn-primary': currentPage === page}" class="join-item btn btn-active">{{page}}</button>
+                        }
+                    }
+                </div>
+            } @else {
+                <p class="self-center rounded-box border border-secondary/20 p-2 bg-neutral mt-8">Não há processos registrados</p>
+            }
+        } 
+    } @else {
+        <div class="w-full px-2 mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  justify-center gap-8">
+            <div class="skeleton w-full h-[36.5rem] min-[400px]:h-[32rem] sm:h-[26rem] md:h-[30rem] lg:h-[36rem]"></div>
+            <div class="skeleton w-full h-[36.5rem] min-[400px]:h-[32rem] sm:h-[26rem] md:h-[30rem] lg:h-[36rem]"></div>
+            <div class="skeleton w-full h-[36.5rem] min-[400px]:h-[32rem] sm:h-[26rem] md:h-[30rem] lg:h-[36rem]"></div>
+            <div class="skeleton w-full h-[36.5rem] min-[400px]:h-[32rem] sm:h-[26rem] md:h-[30rem] lg:h-[36rem]"></div>
+            <div class="skeleton w-full h-[36.5rem] min-[400px]:h-[32rem] sm:h-[26rem] md:h-[30rem] lg:h-[36rem]"></div> 
+        </div>
+    }
+</div>

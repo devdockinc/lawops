@@ -1,0 +1,4 @@
+.no-scroll{
+    overflow-y: hidden;
+    scrollbar-gutter: stable;
+}
